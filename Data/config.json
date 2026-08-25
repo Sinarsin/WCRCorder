@@ -1,0 +1,18 @@
+{
+  "OutputFolder": "Data\\Video",
+  "VideoDevice": "Full HD webcam",
+  "AudioDevice": "\u041C\u0438\u043A\u0440\u043E\u0444\u043E\u043D (USB Microphone)",
+  "Width": 1920,
+  "Height": 1080,
+  "FPS": 30,
+  "Codec": "libx264",
+  "Bitrate": "6000k",
+  "SegmentMinutes": 10,
+  "StartHidden": false,
+  "StartRecording": false,
+  "HotkeyShow": "Ctrl\u002BShift\u002B4",
+  "HotkeyStart": "Ctrl\u002BShift\u002BF8",
+  "HotkeyStop": "Ctrl\u002BShift\u002BF9",
+  "Logging": true,
+  "Password": ""
+}

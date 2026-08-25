@@ -6,8 +6,6 @@ namespace WCRCorder.Config;
 
 public class ConfigService
 {
-    private const string DataFolder = AppPaths.Data;
-    private const string ConfigFileName = "config.json";
 
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -20,7 +18,7 @@ public class ConfigService
     {
         AppPaths.CreateDirectories();
 
-        var configPath = AppPaths.Config;
+        var configPath = AppPaths.ConfigFile;
 
         if (!File.Exists(configPath))
         {
@@ -45,9 +43,9 @@ public class ConfigService
 
     public void Save()
     {
-        Directory.CreateDirectory(DataFolder);
+        Directory.CreateDirectory(AppPaths.DataDirectory);
 
-        var configPath = Path.Combine(DataFolder, ConfigFileName);
+        var configPath = Path.Combine(AppPaths.DataDirectory, AppPaths.ConfigFile);
 
         var json = JsonSerializer.Serialize(Settings, _jsonOptions);
 

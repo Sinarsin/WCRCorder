@@ -15,7 +15,7 @@ public class LogService
             AppPaths.CreateDirectories();
 
             var logFile = Path.Combine(
-                AppPaths.Logs,
+                AppPaths.LogsDirectory,
                 $"{DateTime.Now:yyyy-MM-dd}.log");
 
             var line =

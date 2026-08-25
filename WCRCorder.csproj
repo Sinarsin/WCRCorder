@@ -9,9 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Icons\**" />
+    <EmbeddedResource Remove="Icons\**" />
+    <None Remove="Icons\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="Data\" />
     <Folder Include="Temp\" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Content Include="FFmpeg\Bin\ffmpeg.exe">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>  
 
 </Project>
