@@ -245,4 +245,83 @@ public sealed class DeviceService
             formats.Add(format);
         }
     }
+    public bool IsVideoDeviceAvailable(string deviceName)
+    {
+        if (string.IsNullOrWhiteSpace(deviceName))
+            return false;
+
+        var ffmpegPath = AppPaths.FFmpegExecutable;
+
+        if (!File.Exists(ffmpegPath))
+            return false;
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = ffmpegPath,
+
+            Arguments =
+                $"-hide_banner " +
+                $"-f dshow " +
+                $"-video_size 1920x1080 " +
+                $"-vcodec mjpeg " +
+                $"-i \"video={deviceName}\" " +
+                $"-t 1 " +
+                $"-f null -",
+
+            UseShellExecute = false,
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+            CreateNoWindow = true,
+            StandardErrorEncoding = Encoding.UTF8,
+            StandardOutputEncoding = Encoding.UTF8
+        };
+
+        try
+        {
+            using var process = new Process
+            {
+                StartInfo = startInfo
+            };
+
+            process.Start();
+
+            var error = process.StandardError.ReadToEnd();
+
+            process.WaitForExit(3000);
+
+            if (!process.HasExited)
+            {
+                try
+                {
+                    process.Kill();
+                }
+                catch
+                {
+                    // Ignore
+                }
+
+                _logger.Write(
+                    $"Camera availability check timeout for '{deviceName}'.");
+
+                return false;
+            }
+
+            _logger.Write(
+                $"Camera availability check for '{deviceName}': exit code {process.ExitCode}");
+
+            if (process.ExitCode != 0)
+            {
+                _logger.Write(error);
+            }
+
+            return process.ExitCode == 0;
+        }
+        catch (Exception ex)
+        {
+            _logger.Write(
+                $"Camera availability check failed for '{deviceName}': {ex.Message}");
+
+            return false;
+        }
+    }
 }

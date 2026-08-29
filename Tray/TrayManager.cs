@@ -13,10 +13,18 @@ public sealed class TrayManager : IDisposable
     public event Action? StopRequested;
     public event Action? SettingsRequested;
     public event Action? ExitRequested;
-
+    private readonly ToolStripMenuItem _statusItem;
     public TrayManager()
     {
         _menu = new ContextMenuStrip();
+
+        _statusItem = new ToolStripMenuItem("Ready")
+        {
+            Enabled = false
+        };
+
+        _menu.Items.Add(_statusItem);
+        _menu.Items.Add(new ToolStripSeparator());
 
         _menu.Items.Add("Start", null, (_, _) => StartRequested?.Invoke());
         _menu.Items.Add("Stop", null, (_, _) => StopRequested?.Invoke());
@@ -41,6 +49,16 @@ public sealed class TrayManager : IDisposable
             Text = "WCRCorder",
             ContextMenuStrip = _menu
         };
+    }
+    public void SetStatus(string status)
+    {
+        if (_menu.InvokeRequired)
+        {
+            _menu.BeginInvoke(new Action(() => SetStatus(status)));
+            return;
+        }
+
+        _statusItem.Text = status;
     }
 
     public void Dispose()
