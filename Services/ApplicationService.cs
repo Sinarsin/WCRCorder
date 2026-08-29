@@ -19,7 +19,6 @@ public sealed class ApplicationService
     public ApplicationStateService State { get; }
     public RecorderService Recorder { get; }
     private System.Threading.Timer? _cameraStatusTimer;
-    private readonly object _cameraOperationLock = new();
 
     public void ShowSettings()
     {
@@ -110,8 +109,8 @@ public sealed class ApplicationService
         _cameraStatusTimer = new System.Threading.Timer(
             _ => UpdateCameraStatus(),
             null,
-            TimeSpan.FromSeconds(2),
-            TimeSpan.FromSeconds(2));
+            TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(5));
 
         Logger.Write("Application started. Initialize completed.");
 
@@ -122,8 +121,6 @@ public sealed class ApplicationService
 
         Logger.Write($"Video devices: {string.Join(", ", videoDevices)}");
         Logger.Write($"Audio devices: {string.Join(", ", audioDevices)}");
-        Logger.Write($"Audio devices: {string.Join(", ", audioDevices)}");
-
 
         //-временно
         if (videoDevices.Count > 0)
@@ -144,51 +141,50 @@ public sealed class ApplicationService
 
     private void StartRecording()
     {
-        lock (_cameraOperationLock)
+        try
         {
-            try
-            {
-                var settings = Config.Settings;
+            var settings = Config.Settings;
 
-                if (string.IsNullOrWhiteSpace(settings.VideoDevice))
-                {
-                    Logger.Write(
-                        "Cannot start recording: video device is not configured.",
-                        Models.LogLevel.Warning);
-
-                    return;
-                }
-
-                Tray.SetStatus("Working");
-
-                var videoFolder = Path.Combine(
-                    settings.OutputFolder,
-                    DateTime.Now.ToString("yyyy-MM-dd"));
-
-                Directory.CreateDirectory(videoFolder);
-
-                var fileName =
-                    DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") +
-                    "_%03d.mp4";
-
-                var outputFile = Path.Combine(
-                    videoFolder,
-                    fileName);
-
-                Recorder.Start(
-                    settings,
-                    outputFile);
-
-                State.SetState(Models.ApplicationState.Recording);
-            }
-            catch (Exception ex)
+            if (string.IsNullOrWhiteSpace(settings.VideoDevice))
             {
                 Logger.Write(
-                    $"Failed to start recording: {ex.Message}",
-                    Models.LogLevel.Error);
+                    "Cannot start recording: video device is not configured.",
+                    Models.LogLevel.Warning);
 
-                State.SetState(Models.ApplicationState.Error);
+                Tray.SetStatus("Busy");
+                return;
             }
+
+            Tray.SetStatus("Working");
+
+            var videoFolder = Path.Combine(
+                settings.OutputFolder,
+                DateTime.Now.ToString("yyyy-MM-dd"));
+
+            Directory.CreateDirectory(videoFolder);
+
+            var fileName =
+                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") +
+                "_%03d.mp4";
+
+            var outputFile = Path.Combine(
+                videoFolder,
+                fileName);
+
+            Recorder.Start(
+                settings,
+                outputFile);
+
+            State.SetState(Models.ApplicationState.Recording);
+        }
+        catch (Exception ex)
+        {
+            Logger.Write(
+                $"Failed to start recording: {ex.Message}",
+                Models.LogLevel.Error);
+
+            Tray.SetStatus("Busy");
+            State.SetState(Models.ApplicationState.Error);
         }
     }
 
@@ -220,28 +216,25 @@ public sealed class ApplicationService
         if (_isShuttingDown)
             return;
 
-        lock (_cameraOperationLock)
+        if (Recorder.IsRecording)
         {
-            if (Recorder.IsRecording)
-            {
-                Tray.SetStatus("Working");
-                return;
-            }
-
-            var videoDevice = Config.Settings.VideoDevice;
-
-            if (string.IsNullOrWhiteSpace(videoDevice))
-            {
-                Tray.SetStatus("Busy");
-                return;
-            }
-
-            var devices = new DeviceService();
-
-            var available = devices.IsVideoDeviceAvailable(videoDevice);
-
-            Tray.SetStatus(available ? "Ready" : "Busy");
+            Tray.SetStatus("Working");
+            return;
         }
+
+        var videoDevice = Config.Settings.VideoDevice;
+
+        if (string.IsNullOrWhiteSpace(videoDevice))
+        {
+            Tray.SetStatus("Busy");
+            return;
+        }
+
+        var devices = new DeviceService();
+
+        var available = devices.IsVideoDeviceAvailable(videoDevice);
+
+        Tray.SetStatus(available ? "Ready" : "Busy");
     }
     public void Shutdown()
     {
