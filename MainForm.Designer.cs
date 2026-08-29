@@ -40,6 +40,14 @@
             comboBoxResolution = new ComboBox();
             label3 = new Label();
             label4 = new Label();
+            textBoxOutputFolder = new TextBox();
+            label5 = new Label();
+            buttonBrowse = new Button();
+            label6 = new Label();
+            numericSegmentMinutes = new NumericUpDown();
+            checkBoxStartRecording = new CheckBox();
+            checkBoxLogging = new CheckBox();
+            ((System.ComponentModel.ISupportInitialize)numericSegmentMinutes).BeginInit();
             SuspendLayout();
             // 
             // labelPassword
@@ -74,7 +82,7 @@
             // 
             // buttonSave
             // 
-            buttonSave.Location = new Point(12, 250);
+            buttonSave.Location = new Point(12, 335);
             buttonSave.Name = "buttonSave";
             buttonSave.Size = new Size(75, 23);
             buttonSave.TabIndex = 3;
@@ -155,11 +163,84 @@
             label4.TabIndex = 11;
             label4.Text = "Frame rate:";
             // 
+            // textBoxOutputFolder
+            // 
+            textBoxOutputFolder.Location = new Point(95, 190);
+            textBoxOutputFolder.Name = "textBoxOutputFolder";
+            textBoxOutputFolder.Size = new Size(186, 23);
+            textBoxOutputFolder.TabIndex = 12;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(12, 193);
+            label5.Name = "label5";
+            label5.Size = new Size(82, 15);
+            label5.TabIndex = 13;
+            label5.Text = "Output folder:";
+            label5.Click += label5_Click;
+            // 
+            // buttonBrowse
+            // 
+            buttonBrowse.Location = new Point(287, 190);
+            buttonBrowse.Name = "buttonBrowse";
+            buttonBrowse.Size = new Size(75, 23);
+            buttonBrowse.TabIndex = 14;
+            buttonBrowse.Text = "Browse";
+            buttonBrowse.UseVisualStyleBackColor = true;
+            buttonBrowse.Click += buttonBrowse_Click;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(12, 218);
+            label6.Name = "label6";
+            label6.Size = new Size(148, 15);
+            label6.TabIndex = 15;
+            label6.Text = "Segment length (minutes):";
+            // 
+            // numericSegmentMinutes
+            // 
+            numericSegmentMinutes.Location = new Point(166, 216);
+            numericSegmentMinutes.Maximum = new decimal(new int[] { 720, 0, 0, 0 });
+            numericSegmentMinutes.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericSegmentMinutes.Name = "numericSegmentMinutes";
+            numericSegmentMinutes.Size = new Size(120, 23);
+            numericSegmentMinutes.TabIndex = 16;
+            numericSegmentMinutes.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            // 
+            // checkBoxStartRecording
+            // 
+            checkBoxStartRecording.AutoSize = true;
+            checkBoxStartRecording.Location = new Point(12, 247);
+            checkBoxStartRecording.Name = "checkBoxStartRecording";
+            checkBoxStartRecording.Size = new Size(179, 19);
+            checkBoxStartRecording.TabIndex = 17;
+            checkBoxStartRecording.Text = "Start recording automatically";
+            checkBoxStartRecording.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLogging
+            // 
+            checkBoxLogging.AutoSize = true;
+            checkBoxLogging.Location = new Point(11, 272);
+            checkBoxLogging.Name = "checkBoxLogging";
+            checkBoxLogging.Size = new Size(105, 19);
+            checkBoxLogging.TabIndex = 18;
+            checkBoxLogging.Text = "Enable logging";
+            checkBoxLogging.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(checkBoxLogging);
+            Controls.Add(checkBoxStartRecording);
+            Controls.Add(numericSegmentMinutes);
+            Controls.Add(label6);
+            Controls.Add(buttonBrowse);
+            Controls.Add(label5);
+            Controls.Add(textBoxOutputFolder);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(comboBoxResolution);
@@ -175,6 +256,7 @@
             Name = "MainForm";
             Text = "Settings";
             Load += MainForm_Load;
+            ((System.ComponentModel.ISupportInitialize)numericSegmentMinutes).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -193,5 +275,12 @@
         private ComboBox comboBoxResolution;
         private Label label3;
         private Label label4;
+        private TextBox textBoxOutputFolder;
+        private Label label5;
+        private Button buttonBrowse;
+        private Label label6;
+        private NumericUpDown numericSegmentMinutes;
+        private CheckBox checkBoxStartRecording;
+        private CheckBox checkBoxLogging;
     }
 }

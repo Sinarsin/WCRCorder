@@ -4,16 +4,20 @@ using WCRCorder.Devices;
 using WCRCorder.Logging;
 using WCRCorder.Tray;
 using WCRCorder.Utils;
+using WCRCorder.FFmpeg;
+using WCRCorder.Recorder;
 
 namespace WCRCorder.Services;
 
 public sealed class ApplicationService
 {
     private MainForm? _mainForm;
+    private bool _isShuttingDown;
     public TrayManager Tray { get; }
     public ConfigService Config { get; }
     public LogService Logger { get; }
     public ApplicationStateService State { get; }
+    public RecorderService Recorder { get; }
 
     public void ShowSettings()
     {
@@ -64,7 +68,16 @@ public sealed class ApplicationService
         Config = new ConfigService();
         Logger = new LogService();
         State = new ApplicationStateService();
+
+        var ffmpeg = new FFmpegService(Logger);
+
+        Recorder = new RecorderService(
+            ffmpeg,
+            Logger);
+
         Tray = new TrayManager();
+        Tray.StartRequested += StartRecording;
+        Tray.StopRequested += StopRecording;
         Tray.SettingsRequested += ShowSettings;
         Tray.ExitRequested += Shutdown;
     }
@@ -105,8 +118,86 @@ public sealed class ApplicationService
 
 
     }
+
+    private void StartRecording()
+    {
+        try
+        {
+            var settings = Config.Settings;
+
+            if (string.IsNullOrWhiteSpace(settings.VideoDevice))
+            {
+                Logger.Write(
+                    "Cannot start recording: video device is not configured.",
+                    Models.LogLevel.Warning);
+
+                return;
+            }
+
+            var videoFolder = Path.Combine(
+                settings.OutputFolder,
+                DateTime.Now.ToString("yyyy-MM-dd"));
+
+            Directory.CreateDirectory(videoFolder);
+
+            var fileName =
+                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") +
+                "_%03d.mp4";
+
+            var outputFile = Path.Combine(
+                videoFolder,
+                fileName);
+
+            Recorder.Start(
+                settings,
+                outputFile);
+
+            State.SetState(Models.ApplicationState.Recording);
+        }
+        catch (Exception ex)
+        {
+            Logger.Write(
+                $"Failed to start recording: {ex.Message}",
+                Models.LogLevel.Error);
+
+            State.SetState(Models.ApplicationState.Error);
+        }
+    }
+
+    private void StopRecording()
+    {
+        _ = StopRecordingAsync();
+    }
+
+    private async Task StopRecordingAsync()
+    {
+        try
+        {
+            await Recorder.StopAsync();
+
+            State.SetState(Models.ApplicationState.Ready);
+        }
+        catch (Exception ex)
+        {
+            Logger.Write(
+                $"Failed to stop recording: {ex.Message}",
+                Models.LogLevel.Error);
+
+            State.SetState(Models.ApplicationState.Error);
+        }
+    }
     public void Shutdown()
     {
+        if (_isShuttingDown)
+            return;
+
+        _isShuttingDown = true;
+
+        if (Recorder.IsRecording)
+        {
+            StopRecording();
+        }
+
         Logger.Write("Application stopped.");
 
         Tray.Dispose();

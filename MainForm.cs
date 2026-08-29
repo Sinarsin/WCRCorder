@@ -14,6 +14,7 @@ namespace WCRCorder
             InitializeComponent();
             _application = application;
             LoadPasswordSettings();
+            LoadGeneralSettings();
             LoadDevices();
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -35,6 +36,21 @@ namespace WCRCorder
             checkBoxPasswordEnabled.Checked = !string.IsNullOrEmpty(password);
             textBoxPassword.Text = password;
             textBoxPassword.Enabled = checkBoxPasswordEnabled.Checked;
+        }
+
+        private void LoadGeneralSettings()
+        {
+            textBoxOutputFolder.Text =
+                _application.Config.Settings.OutputFolder;
+
+            numericSegmentMinutes.Value =
+                _application.Config.Settings.SegmentMinutes;
+
+            checkBoxStartRecording.Checked =
+                _application.Config.Settings.StartRecording;
+
+            checkBoxLogging.Checked =
+                _application.Config.Settings.Logging;
         }
 
         private void checkBoxPasswordEnabled_CheckedChanged(
@@ -75,6 +91,74 @@ namespace WCRCorder
 
             _application.Config.Settings.AudioDevice =
                 comboBoxAudioDevice.SelectedItem?.ToString() ?? string.Empty;
+
+            _application.Config.Settings.OutputFolder =
+                textBoxOutputFolder.Text;
+
+            _application.Config.Settings.SegmentMinutes =
+                (int)numericSegmentMinutes.Value;
+
+            _application.Config.Settings.StartRecording =
+                checkBoxStartRecording.Checked;
+
+            _application.Config.Settings.Logging =
+                checkBoxLogging.Checked;
+
+            if (string.IsNullOrWhiteSpace(textBoxOutputFolder.Text))
+            {
+                MessageBox.Show(
+                    "Output folder cannot be empty.",
+                    "Settings",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (comboBoxVideoDevice.SelectedItem == null)
+            {
+                MessageBox.Show(
+                    "Please select a video device.",
+                    "Settings",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (comboBoxResolution.SelectedItem == null ||
+                comboBoxFPS.SelectedItem == null)
+            {
+                MessageBox.Show(
+                    "Please select video resolution and FPS.",
+                    "Settings",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (comboBoxResolution.SelectedItem is string resolution)
+            {
+                var parts = resolution
+                    .Split('×', StringSplitOptions.TrimEntries);
+
+                if (parts.Length == 2 &&
+                    int.TryParse(parts[0], out var width) &&
+                    int.TryParse(parts[1], out var height))
+                {
+                    _application.Config.Settings.Width = width;
+                    _application.Config.Settings.Height = height;
+                }
+            }
+
+            if (comboBoxFPS.SelectedItem is string fpsText &&
+                int.TryParse(
+                    fpsText.Replace("FPS", "").Trim(),
+                    out var fps))
+            {
+                _application.Config.Settings.FPS = fps;
+            }
 
             _application.Config.Save();
 
@@ -130,7 +214,20 @@ namespace WCRCorder
                 comboBoxResolution.Items.Add(resolution);
             }
 
-            if (resolutions.Count > 0)
+            var savedWidth = _application.Config.Settings.Width;
+            var savedHeight = _application.Config.Settings.Height;
+
+            var savedResolution =
+                $"{savedWidth} × {savedHeight}";
+
+            var savedResolutionIndex =
+                comboBoxResolution.Items.IndexOf(savedResolution);
+
+            if (savedResolutionIndex >= 0)
+            {
+                comboBoxResolution.SelectedIndex = savedResolutionIndex;
+            }
+            else if (comboBoxResolution.Items.Count > 0)
             {
                 comboBoxResolution.SelectedIndex = 0;
             }
@@ -181,7 +278,16 @@ namespace WCRCorder
                 comboBoxFPS.Items.Add($"{fps} FPS");
             }
 
-            if (comboBoxFPS.Items.Count > 0)
+            var savedFPS = _application.Config.Settings.FPS;
+
+            var savedFPSIndex =
+                comboBoxFPS.Items.IndexOf($"{savedFPS} FPS");
+
+            if (savedFPSIndex >= 0)
+            {
+                comboBoxFPS.SelectedIndex = savedFPSIndex;
+            }
+            else if (comboBoxFPS.Items.Count > 0)
             {
                 comboBoxFPS.SelectedIndex =
                     comboBoxFPS.Items.Count - 1;
@@ -230,6 +336,25 @@ namespace WCRCorder
         private void comboBoxResolution_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateFPSList();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonBrowse_Click(object sender, EventArgs e)
+        {
+            using var dialog = new FolderBrowserDialog();
+
+            dialog.Description = "Select output folder";
+
+            dialog.SelectedPath = textBoxOutputFolder.Text;
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                textBoxOutputFolder.Text = dialog.SelectedPath;
+            }
         }
     }
 

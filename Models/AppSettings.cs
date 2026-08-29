@@ -18,4 +18,13 @@ public class AppSettings
     public string HotkeyStop { get; set; } = "Ctrl+Shift+F9";
     public bool Logging { get; set; } = true;
     public string Password { get; set; } = string.Empty;
+    public int GOP { get; set; } = 250;
+    public int ForceKeyFrameSeconds { get; set; } = 10;
+    public string Preset { get; set; } = "veryfast";
+    public bool DrawTimestamp { get; set; } = true;
+    public string TimestampPosition { get; set; } = "bottom-left";
+    public int AudioAsync { get; set; } = 1000;
+    public bool UseWallClock { get; set; } = true;
+    public bool GeneratePTS { get; set; } = true;
+    public bool AutoFPS { get; set; } = true;
 }
