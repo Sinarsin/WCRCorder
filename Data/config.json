@@ -14,5 +14,14 @@
   "HotkeyStart": "Ctrl\u002BShift\u002BF8",
   "HotkeyStop": "Ctrl\u002BShift\u002BF9",
   "Logging": true,
-  "Password": ""
+  "Password": "",
+  "GOP": 250,
+  "ForceKeyFrameSeconds": 10,
+  "Preset": "veryfast",
+  "DrawTimestamp": true,
+  "TimestampPosition": "bottom-left",
+  "AudioAsync": 1000,
+  "UseWallClock": true,
+  "GeneratePTS": true,
+  "AutoFPS": true
 }

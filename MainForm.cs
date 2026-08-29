@@ -40,17 +40,37 @@ namespace WCRCorder
 
         private void LoadGeneralSettings()
         {
+            var settings = _application.Config.Settings;
+
             textBoxOutputFolder.Text =
-                _application.Config.Settings.OutputFolder;
+                settings.OutputFolder;
 
             numericSegmentMinutes.Value =
-                _application.Config.Settings.SegmentMinutes;
+                settings.SegmentMinutes;
 
             checkBoxStartRecording.Checked =
-                _application.Config.Settings.StartRecording;
+                settings.StartRecording;
 
             checkBoxLogging.Checked =
-                _application.Config.Settings.Logging;
+                settings.Logging;
+
+            textBoxBitrate.Text =
+                settings.Bitrate;
+
+            numericGOP.Value =
+                Math.Clamp(settings.GOP, 1, 1000);
+
+            numericForceKeyFrameSeconds.Value =
+                Math.Clamp(settings.ForceKeyFrameSeconds, 1, 3600);
+
+            checkBoxDrawTimestamp.Checked =
+                settings.DrawTimestamp;
+
+            checkBoxAutoFPS.Checked =
+                settings.AutoFPS;
+
+            comboBoxFPS.Enabled =
+                !settings.AutoFPS;
         }
 
         private void checkBoxPasswordEnabled_CheckedChanged(
@@ -103,6 +123,20 @@ namespace WCRCorder
 
             _application.Config.Settings.Logging =
                 checkBoxLogging.Checked;
+            _application.Config.Settings.Bitrate =
+                textBoxBitrate.Text.Trim();
+
+            _application.Config.Settings.GOP =
+                (int)numericGOP.Value;
+
+            _application.Config.Settings.ForceKeyFrameSeconds =
+                (int)numericForceKeyFrameSeconds.Value;
+
+            _application.Config.Settings.DrawTimestamp =
+                checkBoxDrawTimestamp.Checked;
+
+            _application.Config.Settings.AutoFPS =
+                checkBoxAutoFPS.Checked;
 
             if (string.IsNullOrWhiteSpace(textBoxOutputFolder.Text))
             {
@@ -126,11 +160,10 @@ namespace WCRCorder
                 return;
             }
 
-            if (comboBoxResolution.SelectedItem == null ||
-                comboBoxFPS.SelectedItem == null)
+            if (comboBoxResolution.SelectedItem == null)
             {
                 MessageBox.Show(
-                    "Please select video resolution and FPS.",
+                    "Please select a video resolution.",
                     "Settings",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
@@ -152,17 +185,35 @@ namespace WCRCorder
                 }
             }
 
-            if (comboBoxFPS.SelectedItem is string fpsText &&
-                int.TryParse(
-                    fpsText.Replace("FPS", "").Trim(),
-                    out var fps))
+            if (!checkBoxAutoFPS.Checked)
             {
+                if (comboBoxFPS.SelectedItem is not string fpsText ||
+                    !int.TryParse(
+                        fpsText.Replace("FPS", "").Trim(),
+                        out var fps))
+                {
+                    MessageBox.Show(
+                        "Please select a valid frame rate.",
+                        "Settings",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    return;
+                }
+
                 _application.Config.Settings.FPS = fps;
             }
 
             _application.Config.Save();
 
             Hide();
+        }
+
+        private void checkBoxAutoFPS_CheckedChanged(
+            object? sender,
+            EventArgs e)
+        {
+            comboBoxFPS.Enabled = !checkBoxAutoFPS.Checked;
         }
 
         private void LoadDevices()

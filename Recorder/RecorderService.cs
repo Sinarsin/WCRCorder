@@ -106,12 +106,12 @@ public sealed class RecorderService
             $"-c:v libx264 " +
             $"-preset veryfast " +
             $"-g {settings.GOP} " +
-            $"-force_key_frames \"expr:gte(t,n_forced*{{settings.ForceKeyFrameSeconds}})\" " +
+            $"-force_key_frames \"expr:gte(t,n_forced*{settings.ForceKeyFrameSeconds})\" " +
             $"-vf \"drawtext=font='Arial':text='%{{localtime\\:%Y-%m-%d %H\\\\\\:%M\\\\\\:%S}}':x=10:y=h-th-10:fontsize=24:fontcolor=white:borderw=2\" " +
             $"-pix_fmt yuv420p " +
             $"-b:v {settings.Bitrate} " +
             $"-c:a aac " +
-            $"-af aresample=async=1000 " +
+     //       $"-af aresample=async=1000 " +
             $"-f segment " +
             $"-segment_time {settings.SegmentMinutes * 60} " +
             $"-reset_timestamps 1 " +

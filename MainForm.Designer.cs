@@ -47,7 +47,17 @@
             numericSegmentMinutes = new NumericUpDown();
             checkBoxStartRecording = new CheckBox();
             checkBoxLogging = new CheckBox();
+            labelBitrate = new Label();
+            textBoxBitrate = new TextBox();
+            labelGOP = new Label();
+            numericGOP = new NumericUpDown();
+            labelForceKeyFrameSeconds = new Label();
+            numericForceKeyFrameSeconds = new NumericUpDown();
+            checkBoxDrawTimestamp = new CheckBox();
+            checkBoxAutoFPS = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)numericSegmentMinutes).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericGOP).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericForceKeyFrameSeconds).BeginInit();
             SuspendLayout();
             // 
             // labelPassword
@@ -82,7 +92,7 @@
             // 
             // buttonSave
             // 
-            buttonSave.Location = new Point(12, 335);
+            buttonSave.Location = new Point(311, 8);
             buttonSave.Name = "buttonSave";
             buttonSave.Size = new Size(75, 23);
             buttonSave.TabIndex = 3;
@@ -229,11 +239,94 @@
             checkBoxLogging.Text = "Enable logging";
             checkBoxLogging.UseVisualStyleBackColor = true;
             // 
+            // labelBitrate
+            // 
+            labelBitrate.AutoSize = true;
+            labelBitrate.Location = new Point(12, 301);
+            labelBitrate.Name = "labelBitrate";
+            labelBitrate.Size = new Size(44, 15);
+            labelBitrate.TabIndex = 19;
+            labelBitrate.Text = "Bitrate:";
+            // 
+            // textBoxBitrate
+            // 
+            textBoxBitrate.Location = new Point(95, 298);
+            textBoxBitrate.Name = "textBoxBitrate";
+            textBoxBitrate.Size = new Size(100, 23);
+            textBoxBitrate.TabIndex = 20;
+            // 
+            // labelGOP
+            // 
+            labelGOP.AutoSize = true;
+            labelGOP.Location = new Point(12, 330);
+            labelGOP.Name = "labelGOP";
+            labelGOP.Size = new Size(34, 15);
+            labelGOP.TabIndex = 21;
+            labelGOP.Text = "GOP:";
+            // 
+            // numericGOP
+            // 
+            numericGOP.Location = new Point(95, 327);
+            numericGOP.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numericGOP.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericGOP.Name = "numericGOP";
+            numericGOP.Size = new Size(100, 23);
+            numericGOP.TabIndex = 22;
+            numericGOP.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // labelForceKeyFrameSeconds
+            // 
+            labelForceKeyFrameSeconds.AutoSize = true;
+            labelForceKeyFrameSeconds.Location = new Point(12, 359);
+            labelForceKeyFrameSeconds.Name = "labelForceKeyFrameSeconds";
+            labelForceKeyFrameSeconds.Size = new Size(133, 15);
+            labelForceKeyFrameSeconds.TabIndex = 23;
+            labelForceKeyFrameSeconds.Text = "Key frame interval (sec):";
+            // 
+            // numericForceKeyFrameSeconds
+            // 
+            numericForceKeyFrameSeconds.Location = new Point(166, 356);
+            numericForceKeyFrameSeconds.Maximum = new decimal(new int[] { 3600, 0, 0, 0 });
+            numericForceKeyFrameSeconds.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericForceKeyFrameSeconds.Name = "numericForceKeyFrameSeconds";
+            numericForceKeyFrameSeconds.Size = new Size(100, 23);
+            numericForceKeyFrameSeconds.TabIndex = 24;
+            numericForceKeyFrameSeconds.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // checkBoxDrawTimestamp
+            // 
+            checkBoxDrawTimestamp.AutoSize = true;
+            checkBoxDrawTimestamp.Location = new Point(12, 385);
+            checkBoxDrawTimestamp.Name = "checkBoxDrawTimestamp";
+            checkBoxDrawTimestamp.Size = new Size(180, 19);
+            checkBoxDrawTimestamp.TabIndex = 25;
+            checkBoxDrawTimestamp.Text = "Show date and time on video";
+            checkBoxDrawTimestamp.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxAutoFPS
+            // 
+            checkBoxAutoFPS.AutoSize = true;
+            checkBoxAutoFPS.Location = new Point(225, 164);
+            checkBoxAutoFPS.Name = "checkBoxAutoFPS";
+            checkBoxAutoFPS.Size = new Size(52, 19);
+            checkBoxAutoFPS.TabIndex = 26;
+            checkBoxAutoFPS.Text = "Auto";
+            checkBoxAutoFPS.UseVisualStyleBackColor = true;
+            checkBoxAutoFPS.CheckedChanged += checkBoxAutoFPS_CheckedChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(checkBoxAutoFPS);
+            Controls.Add(checkBoxDrawTimestamp);
+            Controls.Add(numericForceKeyFrameSeconds);
+            Controls.Add(labelForceKeyFrameSeconds);
+            Controls.Add(numericGOP);
+            Controls.Add(labelGOP);
+            Controls.Add(textBoxBitrate);
+            Controls.Add(labelBitrate);
             Controls.Add(checkBoxLogging);
             Controls.Add(checkBoxStartRecording);
             Controls.Add(numericSegmentMinutes);
@@ -257,6 +350,8 @@
             Text = "Settings";
             Load += MainForm_Load;
             ((System.ComponentModel.ISupportInitialize)numericSegmentMinutes).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericGOP).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericForceKeyFrameSeconds).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -282,5 +377,13 @@
         private NumericUpDown numericSegmentMinutes;
         private CheckBox checkBoxStartRecording;
         private CheckBox checkBoxLogging;
+        private Label labelBitrate;
+        private TextBox textBoxBitrate;
+        private Label labelGOP;
+        private NumericUpDown numericGOP;
+        private Label labelForceKeyFrameSeconds;
+        private NumericUpDown numericForceKeyFrameSeconds;
+        private CheckBox checkBoxDrawTimestamp;
+        private CheckBox checkBoxAutoFPS;
     }
 }
