@@ -5,6 +5,7 @@ using WCRCorder.Models;
 namespace WCRCorder.Recorder;
 
 public sealed class RecorderService
+// Создаёт RecorderService с сервисами управления FFmpeg и логирования.
 {
     private readonly FFmpegService _ffmpeg;
     private readonly LogService _logger;
@@ -23,6 +24,7 @@ public sealed class RecorderService
         AppSettings settings,
         string outputFile)
     {
+        // Проверяет параметры записи, формирует команду FFmpeg и запускает запись.
         if (IsRecording)
         {
             _logger.Write(
@@ -68,6 +70,7 @@ public sealed class RecorderService
     }
 
     public async Task StopAsync()
+    // Асинхронно останавливает текущий процесс записи.
     {
         if (!IsRecording)
         {
@@ -82,6 +85,7 @@ public sealed class RecorderService
     private static string BuildArguments(
         AppSettings settings,
         string outputFile)
+    // Формирует полную командную строку FFmpeg на основе пользовательских настроек записи.
     {
         var videoDevice =
             EscapeDeviceName(settings.VideoDevice);
@@ -120,11 +124,13 @@ public sealed class RecorderService
     }
 
     private static string EscapeDeviceName(string name)
+    // Экранирует имя устройства для безопасной передачи в командной строке FFmpeg.
     {
         return name.Replace("\"", "\\\"");
     }
 
     public void Dispose()
+    // Освобождает ресурсы, связанные с процессом FFmpeg.
     {
         _ffmpeg.Dispose();
     }

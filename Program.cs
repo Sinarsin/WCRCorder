@@ -9,6 +9,8 @@ namespace WCRCorder
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
+        
+        //Точка входа приложения: создаёт ApplicationService, выполняет инициализацию и запускает WinForms message loop.
         static void Main()
         {
             ApplicationConfiguration.Initialize();

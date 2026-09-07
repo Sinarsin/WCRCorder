@@ -9,6 +9,7 @@ using WCRCorder.Recorder;
 
 namespace WCRCorder.Services;
 
+// Создаёт и связывает основные сервисы приложения и подключает обработчики команд системного трея.
 public sealed class ApplicationService
 {
     private MainForm? _mainForm;
@@ -21,6 +22,7 @@ public sealed class ApplicationService
     private System.Threading.Timer? _cameraStatusTimer;
 
     public void ShowSettings()
+    // Открывает окно настроек, при необходимости предварительно запрашивая пароль.
     {
         if (string.IsNullOrEmpty(Config.Settings.Password))
         {
@@ -48,6 +50,7 @@ public sealed class ApplicationService
     }
 
     private void ShowSettingsForm()
+    // Создаёт окно настроек при первом обращении и показывает его при последующих вызовах.
     {
         if (_mainForm == null)
         {
@@ -60,6 +63,7 @@ public sealed class ApplicationService
     }
 
     public void HideSettings()
+    // Скрывает окно настроек, не уничтожая его.
     {
         _mainForm?.Hide();
     }
@@ -86,6 +90,9 @@ public sealed class ApplicationService
     }
 
     public void Initialize()
+    //создаёт каталоги; загружает настройки; проверяет камеру; запускает таймер проверки камеры;
+    // пишет стартовый лог; переводит состояние в Ready; получает список видео - и аудиоустройств;
+    // получает форматы первого видеоустройства.
     {
         AppPaths.CreateDirectories();
 
@@ -140,6 +147,7 @@ public sealed class ApplicationService
     }
 
     private void StartRecording()
+    //Подготавливает параметры записи и запускает RecorderService.
     {
         try
         {
@@ -189,11 +197,13 @@ public sealed class ApplicationService
     }
 
     private void StopRecording()
+    // Запускает асинхронную остановку записи без блокировки обработчика команды.
     {
         _ = StopRecordingAsync();
     }
 
     private async Task StopRecordingAsync()
+    // Корректно завершает запись и переводит приложение в состояние Ready.
     {
         try
         {
@@ -212,6 +222,7 @@ public sealed class ApplicationService
     }
 
     private void UpdateCameraStatus()
+    // Периодически проверяет доступность выбранной камеры и обновляет статус в системном трее.
     {
         if (_isShuttingDown)
             return;
@@ -237,6 +248,7 @@ public sealed class ApplicationService
         Tray.SetStatus(available ? "Ready" : "Busy");
     }
     public void Shutdown()
+    // Выполняет централизованное завершение приложения и освобождает все основные ресурсы.
     {
         if (_isShuttingDown)
             return;

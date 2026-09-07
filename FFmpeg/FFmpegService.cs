@@ -5,6 +5,7 @@ using WCRCorder.Utils;
 namespace WCRCorder.FFmpeg;
 
 public sealed class FFmpegService
+// низкоуровневое управление процессом FFmpeg.
 {
     private readonly LogService _logger;
 
